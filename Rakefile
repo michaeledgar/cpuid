@@ -5,8 +5,11 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "cpuid"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.summary = "Access x86 CPUID information from Ruby"
+    gem.description = <<-EOF
+    Access x86 CPUID information from Ruby, including vendor name, brand information,
+processor family, and so on.
+EOF
     gem.email = "michael.j.edgar@dartmouth.edu"
     gem.homepage = "http://github.com/michaeledgar/cpuid"
     gem.authors = ["Michael Edgar"]
