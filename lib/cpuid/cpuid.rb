@@ -9,7 +9,6 @@ module CPUID
   class UnsupportedFunction < StandardError; end
   include Features
   include Processor
-  
   extend self
 
   ###########################################

@@ -89,6 +89,7 @@ module CPUID
     # @return [String] the serial number of the processor, in the format 
     #   "XXXX-XXXX-XXXX-XXXX-XXXX-XXXX"
     def processor_serial_number
+      raise UnsupportedFunction.new("Your processor does not support a serial number.") unless psn?
       eax, ebx, ecx, edx = run_function(SERIAL_NUMBER_FN)
       [signature, edx, ecx].map {|reg| register_to_hex_s(reg)}.join("-")
     end
