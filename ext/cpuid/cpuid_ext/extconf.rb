@@ -1,3 +1,3 @@
 require 'mkmf'
 
-create_makefile("cpuid_ext")
+create_makefile("cpuid/cpuid_ext")
