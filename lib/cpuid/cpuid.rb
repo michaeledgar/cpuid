@@ -45,6 +45,18 @@ module CPUID
 	end
   
   ##
+  # Is the processor an Intel-made processor?
+  def intel?
+    vendor_string == "GenuineIntel"
+  end
+  
+  ##
+  # Is the process an AMD-made processor?
+  def amd?
+    vendor_string == "AuthenticAMD"
+  end
+  
+  ##
   # The "stepping" of the processor, in number form. Intel term for differentiating processors.
   #
   # @return [Fixnum] the stepping of the processor. 
