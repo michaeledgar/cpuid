@@ -10,12 +10,16 @@ module CPUID
   SIGNATURE_FEATURES_FN = 1
   SERIAL_NUMBER_FN = 3
   MAX_EXT_FN     = 0x80000000
+  EXT_FEATURE_FN = 0x80000001
   BRAND_STR_FN_1 = 0x80000002
   BRAND_STR_FN_2 = 0x80000003
   BRAND_STR_FN_3 = 0x80000004
   ADDRESS_SIZE_FN = 0x80000008
 
-  
+  INTEL_SYSCALL_CHECK_BIT = 1 << 10
+  INTEL_XD_CHECK_BIT = 1 << 19
+  INTEL_64_CHECK_BIT = 1 << 28
+  INTEL_LAHF_CHECK_BIT = 1
   ##
   # Returns the model information of the processor, which can be used
   # for telling individual processors apart. Note: you will need to use
@@ -119,6 +123,38 @@ module CPUID
   # Returns the number of maximum bits this processor can address in physical memory
   def physical_address_size
     run_function(ADDRESS_SIZE_FN).first & 0xFF
+  end
+  
+  ##
+  # Returns whether the process supports the SYSCALL and SYSRET instructions.
+  #
+  # @return [Boolean]
+  def has_syscall?
+    !!(run_function(EXT_FEATURE_FN)[3] & INTEL_SYSCALL_CHECK_BIT)
+  end
+  
+  ##
+  # Returns whether the process supports the SYSCALL and SYSRET instructions.
+  #
+  # @return [Boolean]
+  def has_xd_bit?
+    !!(run_function(EXT_FEATURE_FN)[3] & INTEL_XD_CHECK_BIT)
+  end
+  
+  ##
+  # Returns whether the process supports the LAHF and SAHF instructions.
+  #
+  # @return [Boolean]
+  def has_lahf?
+    !!(run_function(EXT_FEATURE_FN)[2] & INTEL_LAHF_CHECK_BIT)
+  end
+  
+  ##
+  # Returns whether the processor supports the x86_64 instruction set.
+  #
+  # @return [Boolean] does the processor support x86_64?
+  def has_x64?
+    !!(run_function(EXT_FEATURE_FN)[3] & INTEL_64_CHECK_BIT)
   end
   
   #private
