@@ -1,6 +1,6 @@
 = cpuid
 
-Description goes here.
+Access x86 cpuid information from Ruby.
 
 == Note on Patches/Pull Requests
  
