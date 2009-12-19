@@ -1,5 +1,13 @@
 #include <ruby.h>
 
+/**
+ * These two functions were lifted from this guy:
+ * http://code.google.com/p/ruby-cpuid/
+ * Who saved me the trouble of writing the inline assembly. However I changed
+ * how he exposees them to Ruby and how he defines constants and so forth.
+ * @michaeledgar
+ */
+
 static VALUE has_cpuid(VALUE self)
 {
 	long a, c;
@@ -36,6 +44,9 @@ static VALUE run_cpuid(VALUE self, VALUE ax)
 	return rb_ary_new3(4, INT2NUM(regs[0]), INT2NUM(regs[1]), INT2NUM(regs[2]), INT2NUM(regs[3]));
 }
 
+/**
+ * I wrote this stuff. @michaeledgar
+ */
 void Init_cpuid_ext()
 {
     VALUE m_CPUID = rb_define_module("CPUID");

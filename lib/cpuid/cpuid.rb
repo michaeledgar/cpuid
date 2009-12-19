@@ -1,6 +1,6 @@
+
 module CPUID
   class UnsupportedFunction < StandardError; end
-  
   extend self
   
   VENDOR_ID_FN = 0
