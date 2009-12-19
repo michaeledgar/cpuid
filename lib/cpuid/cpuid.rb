@@ -10,6 +10,7 @@ module CPUID
   BRAND_STR_FN_1 = 0x80000002
   BRAND_STR_FN_2 = 0x80000003
   BRAND_STR_FN_3 = 0x80000004
+  ADDRESS_SIZE_FN = 0x80000008
 
   def model_information
     processor_type = [
@@ -47,6 +48,14 @@ module CPUID
     [BRAND_STR_FN_1, BRAND_STR_FN_2, BRAND_STR_FN_3].map do |fxn|
       reg_array_to_s(run_function(fxn))
     end.join
+  end
+  
+  def virtual_address_size
+    run_function(ADDRESS_SIZE_FN) & 0xFF00
+  end
+  
+  def physical_address_size
+    run_function(ADDRESS_SIZE_FN) & 0x00FF
   end
   
   #private
