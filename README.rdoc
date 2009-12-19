@@ -2,6 +2,20 @@
 
 Access x86 cpuid information from Ruby.
 
+== Synopsis
+
+    require 'cpuid'
+    
+    # This should return true, or I don't even know how this gem
+    # built on your computer.
+    CPUID.has_cpuid?
+    
+    CPUID.vendor_string
+    => "GenuineIntel"
+    
+    CPUID.physical_address_size
+    => 36
+    
 == Note on Patches/Pull Requests
  
 * Fork the project.
