@@ -19,3 +19,7 @@ rdoc
 pkg
 
 ## PROJECT::SPECIFIC
+ext/cpuid/Makefile
+ext/cpuid/*.bundle
+ext/cpuid/*.so
+ext/cpuid/*.o
