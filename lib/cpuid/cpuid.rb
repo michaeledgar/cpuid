@@ -14,12 +14,15 @@ module CPUID
   BRAND_STR_FN_1 = 0x80000002
   BRAND_STR_FN_2 = 0x80000003
   BRAND_STR_FN_3 = 0x80000004
+  EXT_L2_FN      = 0x80000006
+  POWER_MANAGEMENT_FN = 0x80000007
   ADDRESS_SIZE_FN = 0x80000008
 
-  INTEL_SYSCALL_CHECK_BIT = 1 << 10
-  INTEL_XD_CHECK_BIT = 1 << 19
-  INTEL_64_CHECK_BIT = 1 << 28
+  INTEL_SYSCALL_CHECK_BIT = 1 << 11
+  INTEL_XD_CHECK_BIT = 1 << 20
+  INTEL_64_CHECK_BIT = 1 << 29
   INTEL_LAHF_CHECK_BIT = 1
+  INTEL_TSC_INVARIANCE_CHECK_BIT = 1 << 7
   ##
   # Returns the model information of the processor, which can be used
   # for telling individual processors apart. Note: you will need to use
@@ -130,7 +133,7 @@ module CPUID
   #
   # @return [Boolean]
   def has_syscall?
-    !!(run_function(EXT_FEATURE_FN)[3] & INTEL_SYSCALL_CHECK_BIT)
+    (run_function(EXT_FEATURE_FN)[3] & INTEL_SYSCALL_CHECK_BIT) > 0
   end
   
   ##
@@ -138,7 +141,7 @@ module CPUID
   #
   # @return [Boolean]
   def has_xd_bit?
-    !!(run_function(EXT_FEATURE_FN)[3] & INTEL_XD_CHECK_BIT)
+    (run_function(EXT_FEATURE_FN)[3] & INTEL_XD_CHECK_BIT) > 0
   end
   
   ##
@@ -146,7 +149,7 @@ module CPUID
   #
   # @return [Boolean]
   def has_lahf?
-    !!(run_function(EXT_FEATURE_FN)[2] & INTEL_LAHF_CHECK_BIT)
+    (run_function(EXT_FEATURE_FN)[2] & INTEL_LAHF_CHECK_BIT) > 0
   end
   
   ##
@@ -154,10 +157,43 @@ module CPUID
   #
   # @return [Boolean] does the processor support x86_64?
   def has_x64?
-    !!(run_function(EXT_FEATURE_FN)[3] & INTEL_64_CHECK_BIT)
+    (run_function(EXT_FEATURE_FN)[3] & INTEL_64_CHECK_BIT) > 0
+  end
+  
+  ##
+  # Returns whether the processor supports TSC invariance.
+  #
+  # I honestly don't know what this is, but it's in the intel spec.
+  def has_tsc_invariance?
+    (run_function(POWER_MANAGEMENT_FN).last & INTEL_TSC_INVARIANCE_CHECK_BIT) > 0
+  end
+  
+  ##
+  # Access L2 information via the extended function, 0x80000006.
+  def easy_L2_info
+    ecx = run_function(SIGNATURE_FEATURES_FN)[2]
+    assoc_bits = ((ecx >> 12) & 0xF)
+    assoc = {}
+    case assoc_bits
+    when 0x0
+      assoc[:disabled] = true
+    when 0xF
+      assoc[:fully_associative] = true
+    else
+      assoc[:direct_mapped] = true if assoc_bits & 0x1 > 0
+      assoc[:sixteen_way] = true   if assoc_bits & 0x8 > 0
+      assoc[:eight_way] = true     if assoc_bits & 0x6 > 0
+      assoc[:four_way] = true      if assoc_bits & 0x4 > 0
+      assoc[:two_way] = true       if assoc_bits & 0x2 > 0
+    end
+    {:line_size => ecx & 0xFF, :cache_size => (ecx >> 16) * 1024, :associativity => assoc}
   end
   
   #private
+  
+  def supports_easy_L2?
+    EXT_L2_FN <= max_extended_param
+  end
   
   def signature
     @signature ||= run_function(SIGNATURE_FEATURES_FN).first
